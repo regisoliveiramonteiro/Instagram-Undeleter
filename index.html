@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5ee">
+  <title>Arquivo | Instagram</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f5ee;
+      --surface: #fffefa;
+      --ink: #202922;
+      --muted: #69736c;
+      --line: #dfe4da;
+      --green: #17624f;
+      --green-dark: #10483a;
+      --green-soft: #e6f0e8;
+      --coral: #bd573f;
+      --shadow: 0 18px 55px rgba(37, 55, 43, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(rgba(23, 98, 79, .075) .7px, transparent .7px);
+      background-size: 17px 17px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 14px;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(32, 41, 34, .14);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+    .brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50%; background: var(--green); color: white; font-family: Georgia, serif; font-size: 19px; }
+    .brand-name { font-family: Georgia, serif; font-size: 18px; letter-spacing: .2px; }
+    .privacy-tag { display: inline-flex; align-items: center; gap: 8px; color: var(--green-dark); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .privacy-dot { width: 7px; height: 7px; border-radius: 50%; background: #3c8c60; box-shadow: 0 0 0 4px #dcebdd; }
+    .intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 42px; align-items: end; padding: 54px 0 32px; animation: reveal .45s ease-out both; }
+    .eyebrow { margin: 0 0 13px; color: var(--coral); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+    h1 { max-width: 700px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(37px, 5vw, 58px); font-weight: 400; line-height: 1.03; letter-spacing: 0; }
+    .intro-copy { max-width: 590px; margin: 16px 0 0; color: var(--muted); font-size: 15px; line-height: 1.65; }
+    .intro-aside { min-width: 205px; padding: 0 0 5px 20px; border-left: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .intro-aside strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 13px; }
+    .import-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 17px 0 25px; border-bottom: 1px solid var(--line); }
+    .button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 15px; border: 1px solid transparent; border-radius: 4px; font-size: 13px; font-weight: 650; transition: background .16s ease, border-color .16s ease, transform .16s ease; }
+    .button:hover { transform: translateY(-1px); }
+    .button-primary { background: var(--green); color: white; }
+    .button-primary:hover { background: var(--green-dark); }
+    .button-secondary { border-color: #bdc9bf; background: transparent; color: var(--green-dark); }
+    .button-secondary:hover { background: var(--green-soft); }
+    .button svg { width: 16px; height: 16px; }
+    .import-status { min-height: 18px; margin-left: 4px; color: var(--muted); font-size: 12px; }
+    .import-status.error { color: #a63b2d; }
+    .import-status.success { color: var(--green-dark); }
+    .overview { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 19px 0 13px; }
+    .overview-title { margin: 0; font-family: Georgia, serif; font-size: 21px; font-weight: 400; }
+    .overview-meta { color: var(--muted); font-size: 12px; }
+    .workspace { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 460px; overflow: hidden; border: 1px solid #dce2d8; border-radius: 5px; background: var(--surface); box-shadow: var(--shadow); animation: reveal .5s .08s ease-out both; }
+    .thread-panel { min-width: 0; border-right: 1px solid var(--line); background: rgba(249, 250, 245, .72); }
+    .panel-heading { height: 61px; display: flex; justify-content: space-between; align-items: center; padding: 0 19px; border-bottom: 1px solid var(--line); }
+    .panel-heading h2 { margin: 0; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+    .count { min-width: 23px; padding: 4px 7px; border-radius: 12px; background: var(--green-soft); color: var(--green-dark); text-align: center; font-size: 11px; font-weight: 700; }
+    .thread-list { max-height: 510px; overflow-y: auto; }
+    .thread-button { width: 100%; display: block; padding: 15px 19px 14px; border: 0; border-bottom: 1px solid #e9ece6; background: transparent; text-align: left; color: inherit; }
+    .thread-button:hover { background: #f2f6ef; }
+    .thread-button[aria-current="true"] { background: var(--green-soft); box-shadow: inset 3px 0 var(--green); }
+    .thread-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .thread-name { overflow: hidden; color: var(--ink); font-size: 13px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .thread-date { flex: none; color: #849087; font-size: 10px; }
+    .thread-preview { overflow: hidden; margin: 7px 0 0; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .messages-panel { display: flex; min-width: 0; flex-direction: column; }
+    .messages-heading { display: flex; min-height: 61px; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 21px; border-bottom: 1px solid var(--line); }
+    .conversation-title { min-width: 0; }
+    .conversation-title h2 { overflow: hidden; margin: 0; font-family: Georgia, serif; font-size: 18px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+    .conversation-title span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .search-wrap { position: relative; width: min(245px, 48%); flex: none; }
+    .search-wrap svg { position: absolute; top: 10px; left: 11px; width: 15px; height: 15px; color: #78847b; }
+    .search { width: 100%; height: 36px; padding: 0 12px 0 34px; border: 1px solid #dce2d8; border-radius: 4px; outline: none; background: white; color: var(--ink); font-size: 12px; }
+    .search:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23, 98, 79, .1); }
+    .message-list { flex: 1; min-height: 330px; max-height: 510px; overflow-y: auto; padding: 20px clamp(16px, 4vw, 38px); background: linear-gradient(90deg, rgba(240, 244, 236, .42), transparent 23%, transparent 77%, rgba(240, 244, 236, .42)); }
+    .day-divider { display: flex; align-items: center; gap: 12px; margin: 2px 0 18px; color: #7d887e; font-size: 10px; letter-spacing: .7px; text-transform: uppercase; }
+    .day-divider::before, .day-divider::after { height: 1px; flex: 1; background: #e3e8df; content: ""; }
+    .message-row { display: flex; margin: 0 0 11px; animation: reveal .2s ease-out both; }
+    .message-row.mine { justify-content: flex-end; }
+    .bubble { max-width: min(78%, 490px); padding: 10px 13px 8px; border: 1px solid #e4e8df; border-radius: 3px 12px 12px 12px; background: white; box-shadow: 0 2px 7px rgba(33, 49, 38, .035); }
+    .mine .bubble { border-color: #c8dfce; border-radius: 12px 3px 12px 12px; background: #eaf4e9; }
+    .sender { display: block; margin-bottom: 4px; color: var(--green-dark); font-size: 10px; font-weight: 700; }
+    .message-text { margin: 0; overflow-wrap: anywhere; color: #29332c; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .message-time { display: block; margin-top: 5px; color: #849087; text-align: right; font-size: 9px; }
+    .empty-state { display: grid; min-height: 310px; place-content: center; justify-items: center; padding: 24px; text-align: center; }
+    .empty-symbol { display: grid; width: 44px; height: 44px; place-items: center; margin-bottom: 13px; border: 1px solid #d6e2d6; border-radius: 50%; color: var(--green); }
+    .empty-symbol svg { width: 20px; height: 20px; }
+    .empty-state h3 { margin: 0; font-family: Georgia, serif; font-size: 18px; font-weight: 400; }
+    .empty-state p { max-width: 350px; margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .footnote { display: flex; justify-content: space-between; gap: 22px; padding: 16px 0 25px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .footnote span { max-width: 600px; }
+    .footnote strong { color: var(--ink); font-weight: 650; }
+    input[type="file"] { display: none; }
+    [hidden] { display: none !important; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 30px, 620px); }
+      .topbar { height: 64px; }
+      .intro { grid-template-columns: 1fr; gap: 18px; padding: 38px 0 23px; }
+      h1 { max-width: 560px; font-size: 42px; }
+      .intro-aside { max-width: 420px; padding-left: 13px; }
+      .workspace { grid-template-columns: 1fr; }
+      .thread-panel { border-right: 0; border-bottom: 1px solid var(--line); }
+      .thread-list { display: flex; max-height: 160px; overflow-x: auto; overflow-y: hidden; }
+      .thread-button { min-width: 205px; max-width: 245px; border-right: 1px solid #e9ece6; border-bottom: 0; }
+      .messages-heading { padding: 10px 14px; }
+      .message-list { min-height: 340px; padding: 17px 14px; }
+      .footnote { flex-direction: column; gap: 5px; }
+    }
+    @media (max-width: 460px) {
+      .shell { width: calc(100% - 24px); }
+      .privacy-tag { font-size: 9px; letter-spacing: .7px; }
+      h1 { font-size: 37px; }
+      .intro-copy { font-size: 14px; }
+      .import-bar { align-items: stretch; }
+      .import-bar .button { flex: 1 1 42%; padding: 0 9px; font-size: 12px; }
+      .import-status { flex-basis: 100%; margin: 2px 0 0; }
+      .overview { align-items: baseline; }
+      .overview-title { font-size: 19px; }
+      .overview-meta { text-align: right; }
+      .messages-heading { align-items: flex-start; flex-direction: column; gap: 9px; padding: 12px 14px; }
+      .search-wrap { width: 100%; }
+      .bubble { max-width: 88%; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Arquivo, início">
+        <span class="brand-mark" aria-hidden="true">a</span>
+        <span class="brand-name">arquivo / instagram</span>
+      </a>
+      <div class="privacy-tag"><span class="privacy-dot" aria-hidden="true"></span> Processamento local</div>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Seu arquivo pessoal, com contexto</p>
+          <h1 id="page-title">Encontre mensagens no seu arquivo do Instagram.</h1>
+          <p class="intro-copy">Consulte conversas incluídas na exportação de dados da sua conta. Os arquivos ficam neste navegador e não são enviados para nenhum servidor.</p>
+        </div>
+        <aside class="intro-aside"><strong>Uma nota importante</strong>Mensagens apagadas que não aparecem na exportação não podem ser recuperadas por este app.</aside>
+      </section>
+
+      <section class="import-bar" aria-label="Importar arquivo">
+        <button class="button button-primary" id="zip-button" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
+          Importar exportação ZIP
+        </button>
+        <button class="button button-secondary" id="folder-button" type="button">Abrir pasta extraída</button>
+        <button class="button button-secondary" id="json-button" type="button">Selecionar arquivos JSON</button>
+        <button class="button button-secondary" id="clear-button" type="button" hidden>Limpar arquivo</button>
+        <span class="import-status" id="import-status" role="status" aria-live="polite">Nenhum arquivo carregado</span>
+        <input id="zip-input" type="file" accept=".zip,application/zip">
+        <input id="folder-input" type="file" webkitdirectory directory multiple>
+        <input id="json-input" type="file" accept=".json,application/json" multiple>
+      </section>
+
+      <section aria-labelledby="overview-title">
+        <div class="overview">
+          <h2 class="overview-title" id="overview-title">Caixa de entrada arquivada</h2>
+          <span class="overview-meta" id="overview-meta">Aguardando importação</span>
+        </div>
+        <div class="workspace">
+          <aside class="thread-panel" aria-label="Lista de conversas">
+            <div class="panel-heading"><h2>Conversas</h2><span class="count" id="thread-count">0</span></div>
+            <div class="thread-list" id="thread-list">
+              <div class="empty-state">
+                <div class="empty-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v12H8l-4 3v-15Z"/><path d="M8 10h8M8 13.5h5"/></svg></div>
+                <h3>Seu arquivo começa aqui</h3>
+                <p>Importe uma exportação para ver as conversas encontradas.</p>
+              </div>
+            </div>
+          </aside>
+          <section class="messages-panel" aria-label="Mensagens da conversa">
+            <div class="messages-heading">
+              <div class="conversation-title"><h2 id="conversation-name">Nenhuma conversa selecionada</h2><span id="conversation-detail">As mensagens aparecem aqui</span></div>
+              <label class="search-wrap" aria-label="Buscar nas conversas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg>
+                <input class="search" id="search-input" type="search" placeholder="Buscar mensagens" autocomplete="off" disabled>
+              </label>
+            </div>
+            <div class="message-list" id="message-list">
+              <div class="empty-state">
+                <div class="empty-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v12H8l-4 3v-15Z"/><path d="M8 10h8M8 13.5h5"/></svg></div>
+                <h3>As mensagens aparecerão aqui</h3>
+                <p>O conteúdo disponível depende do que foi incluído na exportação da sua conta.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <footer class="footnote">
+        <span><strong>Privacidade:</strong> a leitura acontece localmente. Fechar ou atualizar esta página remove os dados importados da sessão.</span>
+        <span>Não conectamos à sua conta do Instagram.</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const zipInput = document.querySelector("#zip-input");
+    const folderInput = document.querySelector("#folder-input");
+    const jsonInput = document.querySelector("#json-input");
+    const statusNode = document.querySelector("#import-status");
+    const threadList = document.querySelector("#thread-list");
+    const messageList = document.querySelector("#message-list");
+    const searchInput = document.querySelector("#search-input");
+    const threadsCount = document.querySelector("#thread-count");
+    const overviewMeta = document.querySelector("#overview-meta");
+    const conversationName = document.querySelector("#conversation-name");
+    const conversationDetail = document.querySelector("#conversation-detail");
+    const clearButton = document.querySelector("#clear-button");
+    let threads = [];
+    let selectedThreadId = null;
+    let searchTerm = "";
+
+    document.querySelector("#zip-button").addEventListener("click", () => zipInput.click());
+    document.querySelector("#folder-button").addEventListener("click", () => folderInput.click());
+    document.querySelector("#json-button").addEventListener("click", () => jsonInput.click());
+    document.querySelector("#clear-button").addEventListener("click", clearArchive);
+    searchInput.addEventListener("input", () => {
+      searchTerm = searchInput.value.trim().toLocaleLowerCase("pt-BR");
+      renderThreads();
+      renderMessages();
+    });
+    zipInput.addEventListener("change", async () => {
+      if (zipInput.files[0]) await importZip(zipInput.files[0]);
+      zipInput.value = "";
+    });
+    folderInput.addEventListener("change", async () => {
+      await importJsonFiles(Array.from(folderInput.files), true);
+      folderInput.value = "";
+    });
+    jsonInput.addEventListener("change", async () => {
+      await importJsonFiles(Array.from(jsonInput.files), false);
+      jsonInput.value = "";
+    });
+
+    function setStatus(message, kind = "") {
+      statusNode.textContent = message;
+      statusNode.className = `import-status ${kind}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+    }
+
+    function formatDate(timestamp, options = { day: "numeric", month: "short", year: "numeric" }) {
+      if (!timestamp) return "Data desconhecida";
+      return new Intl.DateTimeFormat("pt-BR", options).format(new Date(timestamp));
+    }
+
+    function getText(message) {
+      if (typeof message.content === "string" && message.content.trim()) return message.content;
+      if (message.photos?.length) return "[Foto]";
+      if (message.videos?.length) return "[Vídeo]";
+      if (message.audio_files?.length) return "[Áudio]";
+      if (message.gifs?.length) return "[GIF]";
+      if (message.share) return "[Conteúdo compartilhado]";
+      if (message.sticker) return "[Figurinha]";
+      return "[Mensagem sem texto]";
+    }
+
+    function normalizePayload(payload, filePath) {
+      if (!payload || !Array.isArray(payload.messages)) return null;
+      const pathParts = filePath.replace(/\\/g, "/").split("/");
+      const parent = pathParts.length > 1 ? pathParts[pathParts.length - 2] : "";
+      const title = typeof payload.title === "string" && payload.title.trim() ? payload.title.trim() : parent.replace(/_/g, " ") || "Conversa importada";
+      const key = pathParts.length > 1 ? pathParts.slice(0, -1).join("/") : `title:${title}`;
+      const participants = (payload.participants || []).map(person => typeof person === "string" ? person : person?.name).filter(Boolean);
+      return {
+        key,
+        title,
+        participants,
+        messages: payload.messages.map((message, index) => {
+          const rawTime = Number(message.timestamp_ms ?? message.timestamp ?? 0);
+          const timestamp = rawTime > 0 && rawTime < 100000000000 ? rawTime * 1000 : rawTime;
+          const sender = typeof message.sender_name === "string" ? message.sender_name : message.sender_name?.name || "Participante";
+          return { id: `${key}-${index}-${timestamp}`, timestamp, sender, text: getText(message) };
+        })
+      };
+    }
+
+    function mergePayloads(payloads) {
+      const groups = new Map();
+      for (const item of payloads) {
+        const normalized = normalizePayload(item.payload, item.path);
+        if (!normalized) continue;
+        const current = groups.get(normalized.key) || { ...normalized, messages: [], participants: new Set() };
+        normalized.participants.forEach(name => current.participants.add(name));
+        current.messages.push(...normalized.messages);
+        groups.set(normalized.key, current);
+      }
+      return Array.from(groups.values()).map(thread => ({
+        id: thread.key,
+        title: thread.title,
+        participants: Array.from(thread.participants),
+        messages: thread.messages.sort((a, b) => a.timestamp - b.timestamp)
+      })).sort((a, b) => (b.messages.at(-1)?.timestamp || 0) - (a.messages.at(-1)?.timestamp || 0));
+    }
+
+    async function importJsonFiles(files, fromFolder) {
+      if (!files.length) return;
+      setStatus(`Lendo ${files.length} arquivo(s)...`);
+      try {
+        const selected = files.filter(file => /\.json$/i.test(file.name) && (fromFolder || /message/i.test(file.name)));
+        const parsed = await Promise.all(selected.map(async file => ({
+          path: file.webkitRelativePath || file.name,
+          payload: JSON.parse(await file.text())
+        })));
+        finishImport(parsed);
+      } catch (error) {
+        setStatus(`Não foi possível ler o JSON: ${error.message}`, "error");
+      }
+    }
+
+    async function inflateRaw(bytes) {
+      if (typeof DecompressionStream === "undefined") throw new Error("Este navegador não oferece suporte à descompactação local de ZIP. Abra a pasta extraída ou use um navegador atualizado.");
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+
+    async function readZip(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const minOffset = Math.max(0, bytes.length - 65557);
+      let endOffset = -1;
+      for (let offset = bytes.length - 22; offset >= minOffset; offset--) {
+        if (view.getUint32(offset, true) === 0x06054b50) { endOffset = offset; break; }
+      }
+      if (endOffset < 0) throw new Error("O arquivo não parece ser um ZIP válido.");
+      const entryCount = view.getUint16(endOffset + 10, true);
+      let cursor = view.getUint32(endOffset + 16, true);
+      const decoder = new TextDecoder();
+      const parsed = [];
+      for (let index = 0; index < entryCount && cursor + 46 <= bytes.length; index++) {
+        if (view.getUint32(cursor, true) !== 0x02014b50) break;
+        const flags = view.getUint16(cursor + 8, true);
+        const method = view.getUint16(cursor + 10, true);
+        const compressedSize = view.getUint32(cursor + 20, true);
+        const nameLength = view.getUint16(cursor + 28, true);
+        const extraLength = view.getUint16(cursor + 30, true);
+        const commentLength = view.getUint16(cursor + 32, true);
+        const localOffset = view.getUint32(cursor + 42, true);
+        const path = decoder.decode(bytes.subarray(cursor + 46, cursor + 46 + nameLength)).replace(/\\/g, "/");
+        cursor += 46 + nameLength + extraLength + commentLength;
+        if (!/(?:^|\/)messages\/inbox\/.+\/message(?:_\d+)?\.json$/i.test(path) || (flags & 1)) continue;
+        if (localOffset + 30 > bytes.length || view.getUint32(localOffset, true) !== 0x04034b50) continue;
+        const localNameLength = view.getUint16(localOffset + 26, true);
+        const localExtraLength = view.getUint16(localOffset + 28, true);
+        const dataStart = localOffset + 30 + localNameLength + localExtraLength;
+        const compressed = bytes.subarray(dataStart, dataStart + compressedSize);
+        let content;
+        if (method === 0) content = compressed;
+        else if (method === 8) content = await inflateRaw(compressed);
+        else continue;
+        parsed.push({ path, payload: JSON.parse(new TextDecoder().decode(content)) });
+      }
+      return parsed;
+    }
+
+    async function importZip(file) {
+      setStatus("Lendo exportação no navegador...");
+      try {
+        const payloads = await readZip(file);
+        finishImport(payloads);
+      } catch (error) {
+        setStatus(`Falha ao importar: ${error.message}`, "error");
+      }
+    }
+
+    function finishImport(payloads) {
+      const imported = mergePayloads(payloads);
+      if (!imported.length) {
+        threads = [];
+        selectedThreadId = null;
+        searchTerm = "";
+        searchInput.value = "";
+        searchInput.disabled = true;
+        clearButton.hidden = true;
+        overviewMeta.textContent = "Aguardando importação";
+        renderAll();
+        setStatus("Nenhuma conversa em JSON foi encontrada. Confira se a exportação inclui mensagens.", "error");
+        return;
+      }
+      threads = imported;
+      selectedThreadId = threads[0].id;
+      searchTerm = "";
+      searchInput.value = "";
+      searchInput.disabled = false;
+      clearButton.hidden = false;
+      const messageCount = threads.reduce((sum, thread) => sum + thread.messages.length, 0);
+      overviewMeta.textContent = `${threads.length} conversa(s) · ${messageCount} mensagem(ns)`;
+      setStatus(`${threads.length} conversa(s) carregada(s) nesta sessão`, "success");
+      renderAll();
+    }
+
+    function clearArchive() {
+      threads = [];
+      selectedThreadId = null;
+      searchTerm = "";
+      searchInput.value = "";
+      searchInput.disabled = true;
+      clearButton.hidden = true;
+      overviewMeta.textContent = "Aguardando importação";
+      setStatus("Dados removidos desta sessão");
+      renderAll();
+    }
+
+    function getMatches(thread) {
+      if (!searchTerm) return thread.messages;
+      return thread.messages.filter(message => `${message.sender} ${message.text}`.toLocaleLowerCase("pt-BR").includes(searchTerm));
+    }
+
+    function renderThreads() {
+      threadsCount.textContent = String(threads.length);
+      const matching = threads.filter(thread => !searchTerm || thread.title.toLocaleLowerCase("pt-BR").includes(searchTerm) || getMatches(thread).length > 0);
+      if (!threads.length) {
+        threadList.innerHTML = `<div class="empty-state"><div class="empty-symbol" aria-hidden="true">${chatIcon()}</div><h3>Seu arquivo começa aqui</h3><p>Importe uma exportação para ver as conversas encontradas.</p></div>`;
+        return;
+      }
+      if (!matching.length) {
+        threadList.innerHTML = `<div class="empty-state"><h3>Nenhuma conversa encontrada</h3><p>Tente outro termo de busca.</p></div>`;
+        return;
+      }
+      threadList.innerHTML = matching.map(thread => {
+        const last = thread.messages.at(-1);
+        const preview = last ? `${last.sender}: ${last.text}` : "Sem mensagens";
+        return `<button class="thread-button" type="button" data-thread="${escapeHtml(thread.id)}" aria-current="${thread.id === selectedThreadId}"><span class="thread-topline"><span class="thread-name">${escapeHtml(thread.title)}</span><span class="thread-date">${last?.timestamp ? escapeHtml(formatDate(last.timestamp, { day: "numeric", month: "short" })) : ""}</span></span><span class="thread-preview">${escapeHtml(preview)}</span></button>`;
+      }).join("");
+      threadList.querySelectorAll("[data-thread]").forEach(button => button.addEventListener("click", () => {
+        selectedThreadId = button.dataset.thread;
+        renderAll();
+      }));
+    }
+
+    function renderMessages() {
+      const thread = threads.find(item => item.id === selectedThreadId);
+      if (!thread) {
+        conversationName.textContent = "Nenhuma conversa selecionada";
+        conversationDetail.textContent = "As mensagens aparecem aqui";
+        messageList.innerHTML = `<div class="empty-state"><div class="empty-symbol" aria-hidden="true">${chatIcon()}</div><h3>As mensagens aparecerão aqui</h3><p>O conteúdo disponível depende do que foi incluído na exportação da sua conta.</p></div>`;
+        return;
+      }
+      const filtered = getMatches(thread);
+      conversationName.textContent = thread.title;
+      conversationDetail.textContent = `${thread.messages.length} mensagem(ns)${thread.participants.length ? ` · ${thread.participants.join(", ")}` : ""}${searchTerm ? ` · ${filtered.length} resultado(s)` : ""}`;
+      if (!filtered.length) {
+        messageList.innerHTML = `<div class="empty-state"><h3>Nenhuma mensagem encontrada</h3><p>Não há resultados para este termo nesta conversa.</p></div>`;
+        return;
+      }
+      let previousDay = "";
+      messageList.innerHTML = filtered.map(message => {
+        const day = message.timestamp ? new Date(message.timestamp).toLocaleDateString("pt-BR") : "Data desconhecida";
+        const divider = day !== previousDay ? `<div class="day-divider">${escapeHtml(day)}</div>` : "";
+        previousDay = day;
+        return `${divider}<article class="message-row"><div class="bubble"><span class="sender">${escapeHtml(message.sender)}</span><p class="message-text">${escapeHtml(message.text)}</p><time class="message-time">${message.timestamp ? escapeHtml(formatDate(message.timestamp, { hour: "2-digit", minute: "2-digit" })) : ""}</time></div></article>`;
+      }).join("");
+      messageList.scrollTop = messageList.scrollHeight;
+    }
+
+    function renderAll() {
+      renderThreads();
+      renderMessages();
+    }
+
+    function chatIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v12H8l-4 3v-15Z"/><path d="M8 10h8M8 13.5h5"/></svg>`;
+    }
+  </script>
+</body>
+</html>
